@@ -1,4 +1,5 @@
 import { ui } from './ui.js';
+import { renderer } from './renderer.js';
 
 const game = {
     state: {
@@ -46,14 +47,16 @@ const game = {
         const mapPromise = fetch("data/map.json").then(res => res.json());
         const evidencePromise = fetch("data/evidence.json").then(res => res.json());
         const itemsPromise = fetch("data/items.json").then(res => res.json());
+        const artPromise = fetch("data/art.json").then(res => res.json());
 
-        const [characters, tasks, map, evidence, items] = await Promise.all([charactersPromise, tasksPromise, mapPromise, evidencePromise, itemsPromise]);
+        const [characters, tasks, map, evidence, items, art] = await Promise.all([charactersPromise, tasksPromise, mapPromise, evidencePromise, itemsPromise, artPromise]);
 
         this.state.characters = characters.map(c => ({ ...c, selected: false }));
         this.state.tasks = tasks;
         this.state.map = map;
         this.state.evidence = evidence;
         this.state.items = items;
+        this.state.art = art;
     },
 
     selectCharacter(characterName) {
@@ -272,12 +275,8 @@ const game = {
         this.updateGameTime();
         this.updateSanity();
         this.updateUtilities();
-        ui.updateGameClock(this);
-        ui.updateSanity(this);
-        ui.updateInventory(this);
-        ui.updateTasks(this);
-        ui.updateUtilities(this);
-        ui.draw(this);
+        renderer.draw(this);
+        renderer.drawUi(this);
         setTimeout(() => this.gameLoop(), this.state.gameSpeed);
     },
 
