@@ -9,13 +9,23 @@ const game = {
         currentScreen: "main-menu",
         tasks: [],
         map: {},
+        evidence: [],
+        items: [],
+        utilities: {
+            power: 100,
+            windows: 100,
+            heat: 100,
+            food: 100
+        },
         player: {
             x: 400,
             y: 300,
             speed: 5,
             sanity: 100,
             inventory: [],
-            isDead: false
+            isDead: false,
+            ultimatePoints: 0,
+            trust: {}
         },
         gameTime: {
             hour: 12,
@@ -34,12 +44,16 @@ const game = {
         const charactersPromise = fetch("data/characters.json").then(res => res.json());
         const tasksPromise = fetch("data/tasks.json").then(res => res.json());
         const mapPromise = fetch("data/map.json").then(res => res.json());
+        const evidencePromise = fetch("data/evidence.json").then(res => res.json());
+        const itemsPromise = fetch("data/items.json").then(res => res.json());
 
-        const [characters, tasks, map] = await Promise.all([charactersPromise, tasksPromise, mapPromise]);
+        const [characters, tasks, map, evidence, items] = await Promise.all([charactersPromise, tasksPromise, mapPromise, evidencePromise, itemsPromise]);
 
         this.state.characters = characters.map(c => ({ ...c, selected: false }));
         this.state.tasks = tasks;
         this.state.map = map;
+        this.state.evidence = evidence;
+        this.state.items = items;
     },
 
     selectCharacter(characterName) {
@@ -106,8 +120,98 @@ const game = {
     murder(victim) {
         if (this.state.players.find(p => p.id === "player1") === this.state.killer) {
             victim.isDead = true;
+            this.generateEvidence(victim);
             console.log(`${victim.character.name} has been murdered.`);
         }
+    },
+
+    generateEvidence(victim) {
+        const randomEvidenceIndex = Math.floor(Math.random() * this.state.evidence.length);
+        const evidence = {
+            ...this.state.evidence[randomEvidenceIndex],
+            x: victim.x,
+            y: victim.y
+        };
+        this.state.evidence.push(evidence);
+        console.log(`Evidence generated at ${victim.x}, ${victim.y}: ${evidence.name}`);
+    },
+
+    collectEvidence(player, evidence) {
+        player.ultimatePoints += evidence.points;
+        const evidenceIndex = this.state.evidence.indexOf(evidence);
+        if (evidenceIndex > -1) {
+            this.state.evidence.splice(evidenceIndex, 1);
+        }
+        console.log(`${player.character.name} collected ${evidence.name} and gained ${evidence.points} ultimate points.`);
+    },
+
+    useUltimate(player) {
+        if (player.ultimatePoints >= 100) {
+            console.log(`${player.character.name} used their ultimate ability: ${player.character.ultimateAbility}`);
+            player.ultimatePoints = 0;
+            // Add ultimate ability logic here
+        } else {
+            console.log(`${player.character.name} does not have enough points to use their ultimate ability.`);
+        }
+    },
+
+    useItem(player, item, target) {
+        if (player === this.state.killer) {
+            if (item.type === "weapon") {
+                this.murder(target);
+                this.removeItemFromInventory(player, item);
+            } else if (item.name === "Cleaning Supplies") {
+                this.cleanEvidence(target);
+                this.removeItemFromInventory(player, item);
+            }
+        }
+    },
+
+    hideBody(player, body) {
+        if (player === this.state.killer) {
+            body.isHidden = true;
+            console.log(`${player.character.name} hid ${body.character.name}'s body.`);
+        }
+    },
+
+    cleanEvidence(player, evidence) {
+        if (player === this.state.killer) {
+            const evidenceIndex = this.state.evidence.indexOf(evidence);
+            if (evidenceIndex > -1) {
+                this.state.evidence.splice(evidenceIndex, 1);
+                console.log(`${player.character.name} cleaned up the evidence.`);
+            }
+        }
+    },
+
+    removeItemFromInventory(player, item) {
+        const itemIndex = player.inventory.indexOf(item);
+        if (itemIndex > -1) {
+            player.inventory.splice(itemIndex, 1);
+        }
+    },
+
+    buildTrust(player, target) {
+        if (!player.trust[target.character.name]) {
+            player.trust[target.character.name] = 0;
+        }
+        player.trust[target.character.name]++;
+        console.log(`${player.character.name} now has ${player.trust[target.character.name]} trust with ${target.character.name}.`);
+    },
+
+    revivePlayer(player, target) {
+        if (player.trust[target.character.name] >= 10 && target.sanity === 0) {
+            target.sanity = 50;
+            console.log(`${player.character.name} revived ${target.character.name}.`);
+        }
+    },
+
+    addNote(player, note) {
+        if (!player.notebook) {
+            player.notebook = [];
+        }
+        player.notebook.push(note);
+        console.log(`${player.character.name} added a note: "${note}"`);
     },
 
     reportBody(body) {
@@ -167,10 +271,12 @@ const game = {
     gameLoop() {
         this.updateGameTime();
         this.updateSanity();
+        this.updateUtilities();
         ui.updateGameClock(this);
         ui.updateSanity(this);
         ui.updateInventory(this);
         ui.updateTasks(this);
+        ui.updateUtilities(this);
         ui.draw(this);
         setTimeout(() => this.gameLoop(), this.state.gameSpeed);
     },
@@ -206,6 +312,17 @@ const game = {
             console.log("Final meeting time!");
             this.callMeeting();
         }
+    },
+
+    updateUtilities() {
+        // Decrease utilities over time
+        this.state.utilities.power -= 0.01;
+        this.state.utilities.heat -= 0.05;
+        this.state.utilities.food -= 0.02;
+
+        if (this.state.utilities.power < 0) this.state.utilities.power = 0;
+        if (this.state.utilities.heat < 0) this.state.utilities.heat = 0;
+        if (this.state.utilities.food < 0) this.state.utilities.food = 0;
     }
 };
 

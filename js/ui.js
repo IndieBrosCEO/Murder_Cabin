@@ -113,6 +113,22 @@ const ui = {
                 ctx.fill();
             }
         });
+    },
+
+    updateUtilities(game) {
+        const gameUi = document.getElementById("game-ui");
+        let utilsDiv = document.getElementById("utilities-display");
+        if (!utilsDiv) {
+            utilsDiv = document.createElement("div");
+            utilsDiv.id = "utilities-display";
+            gameUi.appendChild(utilsDiv);
+        }
+        utilsDiv.innerHTML = `
+            Power: ${Math.round(game.state.utilities.power)} |
+            Heat: ${Math.round(game.state.utilities.heat)} |
+            Food: ${Math.round(game.state.utilities.food)} |
+            Windows: ${Math.round(game.state.utilities.windows)}
+        `;
     }
 };
 
