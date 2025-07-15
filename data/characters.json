@@ -1,0 +1,23 @@
+[
+    {
+        "name": "John",
+        "passiveAbility": "Extreme Paranoia",
+        "passiveDisability": "Chronic FOMO",
+        "ultimateAbility": "Anger Issues",
+        "killerAbility": "Your Face is My Wall"
+    },
+    {
+        "name": "Jane",
+        "passiveAbility": "Light Sleeper",
+        "passiveDisability": "Nosy",
+        "ultimateAbility": "Gossip Queen",
+        "killerAbility": "Silent Treatment"
+    },
+    {
+        "name": "Bob",
+        "passiveAbility": "Strong Stomach",
+        "passiveDisability": "Clumsy",
+        "ultimateAbility": "Handyman",
+        "killerAbility": "Short Fuse"
+    }
+]
