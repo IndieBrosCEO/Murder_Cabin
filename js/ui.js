@@ -1,3 +1,5 @@
+import { renderer } from './renderer.js';
+
 const ui = {
     init(game) {
         // Main Menu
@@ -39,96 +41,8 @@ const ui = {
         });
     },
 
-    updateGameClock(game) {
-        const gameUi = document.getElementById("game-ui");
-        let clockDiv = document.getElementById("game-clock");
-        if (!clockDiv) {
-            clockDiv = document.createElement("div");
-            clockDiv.id = "game-clock";
-            gameUi.appendChild(clockDiv);
-        }
-        const hour = String(game.state.gameTime.hour).padStart(2, '0');
-        const minute = String(game.state.gameTime.minute).padStart(2, '0');
-        clockDiv.textContent = `Time: ${hour}:${minute}`;
-    },
-
-    updateSanity(game) {
-        const gameUi = document.getElementById("game-ui");
-        let sanityDiv = document.getElementById("sanity-display");
-        if (!sanityDiv) {
-            sanityDiv = document.createElement("div");
-            sanityDiv.id = "sanity-display";
-            gameUi.appendChild(sanityDiv);
-        }
-        sanityDiv.textContent = `Sanity: ${Math.round(game.state.player.sanity)}`;
-    },
-
-    updateInventory(game) {
-        const gameUi = document.getElementById("game-ui");
-        let inventoryDiv = document.getElementById("inventory-display");
-        if (!inventoryDiv) {
-            inventoryDiv = document.createElement("div");
-            inventoryDiv.id = "inventory-display";
-            gameUi.appendChild(inventoryDiv);
-        }
-        inventoryDiv.innerHTML = "Inventory: ";
-        game.state.player.inventory.forEach(item => {
-            const itemSpan = document.createElement("span");
-            itemSpan.textContent = item.name;
-            inventoryDiv.appendChild(itemSpan);
-        });
-    },
-
-    updateTasks(game) {
-        const gameUi = document.getElementById("game-ui");
-        let tasksDiv = document.getElementById("tasks-display");
-        if (!tasksDiv) {
-            tasksDiv = document.createElement("div");
-            tasksDiv.id = "tasks-display";
-            gameUi.appendChild(tasksDiv);
-        }
-        const player = game.state.players.find(p => p.id === "player1");
-        if (player && player.task) {
-            tasksDiv.textContent = `Task: ${player.task.name}`;
-        } else {
-            tasksDiv.textContent = "Task: None";
-        }
-    },
-
     draw(game) {
-        const canvas = document.getElementById("game-canvas");
-        const ctx = canvas.getContext("2d");
-
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw players
-        game.state.players.forEach(player => {
-            if (!player.isDead) {
-                ctx.fillStyle = "white";
-                ctx.beginPath();
-                // This will need to be updated to draw each player at their own x,y coordinates
-                // For now, it just draws the main player
-                ctx.arc(game.state.player.x, game.state.player.y, 10, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        });
-    },
-
-    updateUtilities(game) {
-        const gameUi = document.getElementById("game-ui");
-        let utilsDiv = document.getElementById("utilities-display");
-        if (!utilsDiv) {
-            utilsDiv = document.createElement("div");
-            utilsDiv.id = "utilities-display";
-            gameUi.appendChild(utilsDiv);
-        }
-        utilsDiv.innerHTML = `
-            Power: ${Math.round(game.state.utilities.power)} |
-            Heat: ${Math.round(game.state.utilities.heat)} |
-            Food: ${Math.round(game.state.utilities.food)} |
-            Windows: ${Math.round(game.state.utilities.windows)}
-        `;
+        renderer.draw(game);
     }
 };
 

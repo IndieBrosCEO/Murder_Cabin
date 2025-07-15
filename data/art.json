@@ -1,0 +1,17 @@
+{
+    "characters": {
+        "player": [
+            " O ",
+            "/|\\",
+            "/ \\"
+        ]
+    },
+    "tiles": {
+        "wall": "#",
+        "floor": "."
+    },
+    "objects": {
+        "furnace": "F",
+        "window": "W"
+    }
+}
