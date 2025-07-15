@@ -6,6 +6,7 @@ const game = {
         players: [],
         characters: [],
         killer: null,
+        killerSanity: 100,
         gameStarted: false,
         currentScreen: "main-menu",
         tasks: [],
@@ -26,7 +27,8 @@ const game = {
             inventory: [],
             isDead: false,
             ultimatePoints: 0,
-            trust: {}
+            trust: {},
+            isKnockedDown: false
         },
         gameTime: {
             hour: 12,
@@ -117,14 +119,19 @@ const game = {
     selectKiller() {
         const randomIndex = Math.floor(Math.random() * this.state.players.length);
         this.state.killer = this.state.players[randomIndex];
+        this.state.killer.draggedBody = null;
         console.log("The killer is:", this.state.killer.character.name);
     },
 
     murder(victim) {
         if (this.state.players.find(p => p.id === "player1") === this.state.killer) {
             victim.isDead = true;
+            this.state.killerSanity += 25;
+            if (this.state.killerSanity > 100) {
+                this.state.killerSanity = 100;
+            }
             this.generateEvidence(victim);
-            console.log(`${victim.character.name} has been murdered.`);
+            console.log(`${victim.character.name} has been murdered. The killer's sanity is now ${this.state.killerSanity}.`);
         }
     },
 
@@ -166,6 +173,22 @@ const game = {
             } else if (item.name === "Cleaning Supplies") {
                 this.cleanEvidence(target);
                 this.removeItemFromInventory(player, item);
+            }
+        }
+    },
+
+    ringDoorbell(player) {
+        console.log(`${player.character.name} rang the doorbell!`);
+        this.callMeeting(false); // Non-mandatory meeting
+    },
+
+    incinerateBody(player, body) {
+        if (player === this.state.killer && player.draggedBody === body) {
+            const bodyIndex = this.state.players.indexOf(body);
+            if (bodyIndex > -1) {
+                this.state.players.splice(bodyIndex, 1);
+                player.draggedBody = null;
+                console.log(`${player.character.name} incinerated ${body.character.name}'s body.`);
             }
         }
     },
@@ -217,13 +240,25 @@ const game = {
         console.log(`${player.character.name} added a note: "${note}"`);
     },
 
+    dragBody(player, body) {
+        if (player === this.state.killer) {
+            if (player.draggedBody === body) {
+                player.draggedBody = null;
+                console.log(`${player.character.name} stopped dragging ${body.character.name}'s body.`);
+            } else {
+                player.draggedBody = body;
+                console.log(`${player.character.name} started dragging ${body.character.name}'s body.`);
+            }
+        }
+    },
+
     reportBody(body) {
         console.log(`${body.character.name}'s body has been reported!`);
         this.callMeeting();
     },
 
-    callMeeting() {
-        console.log("A meeting has been called!");
+    callMeeting(isMandatory = true) {
+        console.log(`A ${isMandatory ? 'mandatory' : 'non-mandatory'} meeting has been called!`);
         this.startVoting();
     },
 
@@ -288,6 +323,11 @@ const game = {
             if (this.state.player.sanity < 0) {
                 this.state.player.sanity = 0;
             }
+        }
+
+        if (this.state.player.sanity === 0) {
+            this.state.player.isKnockedDown = true;
+            console.log(`${this.state.player.character.name} is knocked down!`);
         }
     },
 
