@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Fuel the Furnace",
+        "description": "Add coal to the furnace to keep the cabin warm."
+    },
+    {
+        "name": "Fix the Windows",
+        "description": "Board up the broken windows to keep the cold out."
+    }
+]

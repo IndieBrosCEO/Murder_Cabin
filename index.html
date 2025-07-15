@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murder Mystery Game</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen">
+            <h1>Murder Mystery</h1>
+            <button id="play-btn">Play</button>
+        </div>
+
+        <!-- Character Selection -->
+        <div id="character-selection" class="screen" style="display: none;">
+            <h2>Choose Your Character</h2>
+            <div id="characters"></div>
+            <button id="start-game-btn">Start Game</button>
+        </div>
+
+        <!-- In-Game -->
+        <div id="in-game" class="screen" style="display: none;">
+            <canvas id="game-canvas"></canvas>
+            <div id="game-ui">
+                <!-- UI elements will go here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
