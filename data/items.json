@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Knife",
+        "type": "weapon",
+        "uses": 1
+    },
+    {
+        "name": "Poison",
+        "type": "weapon",
+        "uses": 1
+    },
+    {
+        "name": "Cleaning Supplies",
+        "type": "tool",
+        "uses": 1
+    }
+]

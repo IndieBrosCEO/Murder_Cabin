@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Bloody Knife",
+        "description": "A knife covered in blood. It looks sharp.",
+        "points": 20
+    },
+    {
+        "name": "Hair Fiber",
+        "description": "A single strand of hair. It could belong to anyone.",
+        "points": 10
+    },
+    {
+        "name": " muddy Footprints",
+        "description": "Muddy footprints leading away from the body.",
+        "points": 15
+    }
+]
